@@ -1,4 +1,5 @@
-const { createStore, combineReducers } = require("redux");
+const { createStore, combineReducers, applyMiddleware } = require("redux");
+const { createLogger } = require("redux-logger");
 
 const BUY_CAKE = "BUY_CAKE";
 const BUY_ICECREAM = "BUY_ICECREAM";
@@ -56,21 +57,21 @@ const iceCreamReducer = (state = initialIceCreamState, action) => {
 
 // 创建 store，createStore 接受 reducer 作为参数
 // 调用 createStore 时，会执行 reducer 初始化状态
-
 const rootReducer = combineReducers({
   cake: cakeReducer,
   iceCream: iceCreamReducer,
 });
-const store = createStore(rootReducer);
+// createStore 还接受第二个参数，用来应用中间件
+const store = createStore(rootReducer, applyMiddleware(createLogger()));
 
 // store 暴露一个方法 getState() 用来获取 store 中的状态
 console.log("Initail state: ", store.getState());
 
 // store 暴露一个方法 subscribe(listener) 用来订阅一个监听器
 // 每当 store 中的 state 发生变化，就会调用监听器
-const unsubscribe = store.subscribe(() =>
-  console.log("Update state: ", store.getState())
-);
+const unsubscribe = store.subscribe(() => {
+  // console.log("Update state: ", store.getState());
+});
 
 // store 暴露一个方法 dispatch(action) 用来分发一个 action
 // actin 是通过 action creator 产生的
