@@ -1,7 +1,7 @@
-const redux = require("redux");
-const createStore = redux.createStore;
+const { createStore, combineReducers } = require("redux");
 
 const BUY_CAKE = "BUY_CAKE";
+const BUY_ICECREAM = "BUY_ICECREAM";
 
 // action creator 是一个函数，总是返回一个 action
 function buyCake() {
@@ -12,13 +12,19 @@ function buyCake() {
   };
 }
 
+function buyIceCream() {
+  return {
+    type: BUY_ICECREAM,
+  };
+}
+
 // reducer 的初始状态
-const initialState = {
+const initialCakeState = {
   numOfCake: 10,
 };
 
 // reducer 是一个函数，函数接受两个参数：preState 和 action
-const reducer = (state = initialState, action) => {
+const cakeReducer = (state = initialCakeState, action) => {
   switch (action.type) {
     case BUY_CAKE:
       return {
@@ -31,9 +37,31 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+const initialIceCreamState = {
+  numOfIceCream: 20,
+};
+
+const iceCreamReducer = (state = initialIceCreamState, action) => {
+  switch (action.type) {
+    case BUY_ICECREAM:
+      return {
+        ...state,
+        numOfIceCream: state.numOfIceCream - 1,
+      };
+
+    default:
+      return state;
+  }
+};
+
 // 创建 store，createStore 接受 reducer 作为参数
 // 调用 createStore 时，会执行 reducer 初始化状态
-const store = createStore(reducer);
+
+const rootReducer = combineReducers({
+  cake: cakeReducer,
+  iceCream: iceCreamReducer,
+});
+const store = createStore(rootReducer);
 
 // store 暴露一个方法 getState() 用来获取 store 中的状态
 console.log("Initail state: ", store.getState());
@@ -49,8 +77,10 @@ const unsubscribe = store.subscribe(() =>
 store.dispatch(buyCake());
 store.dispatch(buyCake());
 store.dispatch(buyCake());
+store.dispatch(buyIceCream());
+store.dispatch(buyIceCream());
 
 // 取消订阅
 unsubscribe();
-store.dispatch({ type: BUY_CAKE });
-console.log(store.getState());
+// store.dispatch({ type: BUY_CAKE });
+// console.log(store.getState());
